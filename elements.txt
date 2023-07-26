@@ -1,0 +1,53 @@
+href-button css-h9szfi      
+
+Job Title
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[1]/div/p[1]
+
+Job Salary
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[1]/div/p[2]
+
+experience
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[1]/div/div/div/h6
+
+company
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[2]/div/h5
+
+City:
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[3]/div/p[1]
+
+Street:
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[3]/div/p[2]
+
+Employees:
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[3]/div/p[4]
+
+Link:
+//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]
+
+
+from selenium import webdriver
+
+url = 'https://www.mynimo.com/cebu/it-jobs'
+
+try:
+    # Set up the web driver using Microsoft Edge
+    driver = webdriver.Chrome()
+
+    driver.get(url)
+
+    # # Perform any actions or tasks you need to do on the website here
+    # jobs = driver.find_elements_by_class_name('href-button css-h9szfi')
+
+    # for job in jobs:
+    #     title = job.find_element_by_class_xpath('.//*[@id="__chakra-app"]/main/div/div[4]/div/div[2]/div/div[4]/div/div[2]/a[2]/div/div[1]/div/p[1]').text
+    #     print(title)
+
+except Exception as e:
+    print("An error occurred:", e)
+
+finally:
+    # Keep the browser window open until manually closed
+    input("Press Enter to close the browser...")
+    driver.quit()
+
+
