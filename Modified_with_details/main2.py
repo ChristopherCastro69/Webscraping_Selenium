@@ -25,7 +25,7 @@ try:
         writer.writerow(['Job Title', 'Salary', 'Experience', 'Company', 'City', 'Street', 'Employees', 'Date', 'Link', 'Details'])
 
         for page_number in range(1, total_pages + 1):
-            if page_number > 2:
+            if page_number > 6:
                 break  # Exit the loop if the page number is greater than 2
 
             print(f"Scraping page {page_number}...")
@@ -72,16 +72,7 @@ try:
                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, './/div[@class="css-1lz7cfx"]')))
 
                 job_details = driver.find_elements(By.XPATH, './/div[@class="tw-flex tw-flex-col"]')
-                for jobsD in job_details:
-                    # Extract job title
-                    # job_title_element = driver.find_element(By.XPATH, '//div[@class="html-box"]/p/strong')
-                    # job_title2 = job_title_element.text.strip() if job_title_element else "N/A"
-
-                    # # Extract job highlights
-                    # job_highlights = []
-                    # highlight_elements = driver.find_elements(By.XPATH, '//p[contains(text(), "Job Highlights")]/following-sibling::ul/li')
-                    # for highlight_element in highlight_elements:
-                    #     job_highlights.append(highlight_element.text.strip())
+                for jobsD in job_details:                  
 
                     # Find the job details element containing the unordered list (<ul>) with job details
                     job_details_element = driver.find_element(By.XPATH, '//div[@class="html-box"]')
@@ -93,6 +84,7 @@ try:
                     # Combine the details into a single string (separated by newline)
                     details = "\n".join(details_list)
 
+                   
             
                 print("Job Title:", job_title, 
                       " || Salary:", salary,
@@ -106,25 +98,32 @@ try:
                       " || Details:", details
 
                 )
-
+                
                 time.sleep(1)
                 # Write the data to the CSV file
                 writer.writerow([job_title, salary, experience, company, city, street, employees, date, link_elem, details])
-                break #Bug test
-            # if page_number < total_pages:
-            #     # Find all page buttons
-            #     page_buttons = driver.find_elements(By.XPATH, '//a[@class="href-button css-1ok8g35"]')
+                # Go back to the original page with the list of jobs
 
-            #     # Click on the next page button
-            #     for button in page_buttons:
-            #         if int(button.text) == page_number + 1:
-            #             button.click()
-            #             break
+                driver.back()
+                    # Wait for the job listings to be visible on the new page
+               
 
-            #     # Wait for the job listings to be visible on the new page
-            #     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
+                time.sleep(3)
 
-            # time.sleep(2)
+            if page_number < total_pages:
+                # Find all page buttons
+                page_buttons = driver.find_elements(By.XPATH, '//a[@class="href-button css-1ok8g35"]')
+
+                # Click on the next page button
+                for button in page_buttons:
+                    if int(button.text) == page_number + 1:
+                        button.click()
+                        break
+
+                # Wait for the job listings to be visible on the new page
+                WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
+
+            time.sleep(3)
 
 except Exception as e:
     print("An error occurred:", e)
