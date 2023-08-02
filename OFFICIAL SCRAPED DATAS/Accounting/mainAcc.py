@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import StaleElementReferenceException
 
 import time
 
@@ -15,7 +16,7 @@ try:
 
     driver.get(url)
     # Wait for the job listings to be visible
-    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
+    WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
 
     total_pages = 8  # You may need to update this value based on the actual total number of pages
 
@@ -46,11 +47,6 @@ try:
                 company_elem = job.find_element(By.XPATH, './/h5[@class="company-name-text"]')
                 company = company_elem.text if company_elem else "N/A"
 
-                # city_elem = job.find_element(By.XPATH, './/p[@class="css-6of238"]')
-                # city = city_elem.text if city_elem else "N/A"
-
-                # street_elem = job.find_element(By.XPATH, './/p[@class="css-1ht1cys"]')
-                # street = street_elem.text if street_elem else "N/A"
 
                 emp_elem = job.find_elements(By.XPATH, './/p[@class="css-1ht1cys"]')
                 employees = emp_elem[2].text if len(emp_elem) >= 3 else "N/A"
@@ -62,39 +58,50 @@ try:
 
                 # Click on the link to navigate to the job details page
                 driver.execute_script("arguments[0].click();", job)
-
-                # Wait for the overlay/popup to disappear
-                WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.XPATH, '//div[@role="alert"]')))
-                # Switch to the new tab/window
-                #driver.switch_to.window(driver.window_handles[1])
-                
-                # Wait for the job details page to load completely
-                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, './/div[@class="css-1lz7cfx"]')))
-
-                job_details = driver.find_elements(By.XPATH, './/div[@class="tw-flex tw-flex-col"]')
-                for jobsD in job_details:   
-
+                try:
+                    # Wait for the overlay/popup to disappear
+                    WebDriverWait(driver, 30).until(EC.invisibility_of_element_located((By.XPATH, '//div[@role="alert"]')))
+                    # Switch to the new tab/window
+                    #driver.switch_to.window(driver.window_handles[1])
                     
+                    # Wait for the job details page to load completely
+                    WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.XPATH, './/div[@class="css-1lz7cfx"]')))
+                
 
-                    address_elem = driver.find_element(By.XPATH, './/h6[@class="css-17y5fzp"]')
-                    address = address_elem.text if address_elem else 'N/A'     
- 
-                    date_elem = driver.find_element(By.XPATH, './/h5[@class="tw-text-gray-600 tw-text-sm"]')
-                    date = date_elem.text if date_elem else "N/A"   
+                    job_details = driver.find_elements(By.XPATH, './/div[@class="tw-flex tw-flex-col"]')
+                    for jobsD in job_details:   
 
-                    id_elem = driver.find_elements(By.XPATH, './/h5[@class="tw-text-gray-600 tw-text-sm"]')
-                    job_id =  id_elem[1].text if id_elem else 'N/A'
+                        
 
-                    # Find the job details element containing the unordered list (<ul>) with job details
-                    job_details_element = driver.find_element(By.XPATH, '//div[@class="html-box"]')
+                        address_elem = driver.find_element(By.XPATH, './/h6[@class="css-17y5fzp"]')
+                        address = address_elem.text if address_elem else 'N/A'     
+    
+                        date_elem = driver.find_element(By.XPATH, './/h5[@class="tw-text-gray-600 tw-text-sm"]')
+                        date = date_elem.text if date_elem else "N/A"   
 
-                    # Extract all the <li> elements within the <ul>
-                    job_details_items = job_details_element.find_elements(By.XPATH, './/ul/li')
-                    details_list = [item.text.strip() for item in job_details_items]
+                        id_elem = driver.find_elements(By.XPATH, './/h5[@class="tw-text-gray-600 tw-text-sm"]')
+                        job_id =  id_elem[1].text if id_elem else 'N/A'
 
-                    # Combine the details into a single string (separated by newline)
-                    details = "\n".join(details_list)
+                        # Find the job details element containing the unordered list (<ul>) with job details
+                        job_details_element = driver.find_element(By.XPATH, '//div[@class="html-box"]')
 
+                        # Extract all the <li> elements within the <ul>
+                        job_details_items = job_details_element.find_elements(By.XPATH, './/ul/li')
+                        details_list = [item.text.strip() for item in job_details_items]
+
+                        # Combine the details into a single string (separated by newline)
+                        details = "\n".join(details_list)
+                   
+                except StaleElementReferenceException:
+                # If the element becomes stale, catch the exception and continue to the next iteration
+                    print("Element became stale. Skipping to next job...")
+                    driver.refresh()
+                    continue   
+                except Exception as e:
+                    print("An error occurred:", e)
+                    print(f"Error while scraping {job_title} at page: {page_number}...")
+                    driver.refresh()
+                    continue  
                    
             
                 print("ID:", job_id, 
@@ -132,12 +139,15 @@ try:
                         break
 
                 # Wait for the job listings to be visible on the new page
-                WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
+                WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
 
             time.sleep(3)
 
+
+
 except Exception as e:
     print("An error occurred:", e)
+    print(f"Error while scraping {job_title} at page: {page_number}...")
 
 finally:
     # Quit the driver after finishing the task
