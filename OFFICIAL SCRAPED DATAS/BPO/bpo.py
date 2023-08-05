@@ -7,7 +7,7 @@ from selenium.webdriver.common.keys import Keys
 
 import time
 
-url = 'https://www.mynimo.com/cebu/engineering-architecture-jobs'
+url = 'https://www.mynimo.com/cebu/call-center-bpo-jobs'
 
 try:
     # Set up the web driver using Chrome
@@ -16,7 +16,7 @@ try:
     driver.get(url)
     # Wait for the job listings to be visible
     WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
-    total_pages = 7  # You may need to update this value based on the actual total number of pages
+    total_pages = 8  # You may need to update this value based on the actual total number of pages
     # Starting page (page 4)
     start_page = 5
 
@@ -31,7 +31,7 @@ try:
             break
 
     # Open the CSV file for writing
-    with open('Eng_Rem2.csv', mode='w', encoding='utf-8', newline='') as file:
+    with open('BPO_Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['ID', 'Job Title', 'Salary', 'Experience', 'Company', 'Details', 'Address', 'Employees', 'Date', 'Link'])
 
@@ -39,7 +39,7 @@ try:
             
             print(f"Scraping page {page_number}...")
             # Find all job listings on the current page
-            jobs = driver.find_elements(By.XPATH, '//a[@class="href-button css-h7fpor"]')
+            jobs = driver.find_elements(By.XPATH, '//a[@class="href-button css-h9szfi"]')
 
             for job in jobs:
                 # Find the job title element within each job listing
@@ -132,7 +132,7 @@ try:
                         break
 
                 # Wait for the job listings to be visible on the new page
-                WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h7fpor"]')))
+                WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
 
             time.sleep(3)
             

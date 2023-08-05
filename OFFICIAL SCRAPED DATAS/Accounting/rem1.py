@@ -15,7 +15,7 @@ try:
     # Wait for the job listings to be visible
     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-hvwiok"]')))
 
-    total_pages = 9  # You may need to update this value based on the actual total number of pages
+    total_pages = 8  # You may need to update this value based on the actual total number of pages
 
     # Open the CSV file for writing
     with open('Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
@@ -23,7 +23,7 @@ try:
         writer.writerow(['Job Title', 'Salary', 'Experience', 'Company', 'City', 'Street', 'Employees', 'Date', 'Link'])
 
         for page_number in range(1, total_pages + 1):
-            if page_number > 9:
+            if page_number > 8:
                 break  # Exit the loop if the page number is greater than 2
 
             print(f"Scraping page {page_number}...")
