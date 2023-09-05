@@ -20,7 +20,7 @@ try:
     total_pages = 6  # You may need to update this value based on the actual total number of pages
 
     # Open the CSV file for writing
-    with open('Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
+    with open('Aug_2ndWeek_Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['ID', 'Job Title', 'Salary', 'Experience', 'Company', 'Details', 'Address', 'Employees', 'Date', 'Link'])
 
