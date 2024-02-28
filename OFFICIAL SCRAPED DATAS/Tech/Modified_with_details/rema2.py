@@ -15,24 +15,41 @@ try:
 
     driver.get(url)
     # Wait for the job listings to be visible
-    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h7fpor"]')))
+    WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-hvwiok"]')))
+    total_pages = 4  # You may need to update this value based on the actual total number of pages
+    # Starting page (page 4)
+    start_page = 3
 
-    total_pages = 6  # You may need to update this value based on the actual total number of pages
+     # Locate the page buttons
+    page_buttons = driver.find_elements(By.XPATH, '//a[@class="href-button css-1ok8g35"]')
+
+     # Find the button that corresponds to the start_page
+    for button in page_buttons:
+        if int(button.text) == start_page:
+            # Click on the button to navigate to the start_page (page 4)
+            button.click()
+            break
+    
 
     # Open the CSV file for writing
-    with open('Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
+    with open('Rem2Tech_Nov-Dec_Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['ID', 'Job Title', 'Salary', 'Experience', 'Company', 'Details', 'Address', 'Employees', 'Date', 'Link'])
 
         for page_number in range(1, total_pages + 1):
-            if page_number > 6:
+            if page_number > 4:
                 break  # Exit the loop if the page number is greater than 2
 
             print(f"Scraping page {page_number}...")
             # Find all job listings on the current page
-            jobs = driver.find_elements(By.XPATH, '//a[@class="href-button css-h7fpor"]')
+            
+            jobs = driver.find_elements(By.XPATH, '//a[@class="href-button css-hvwiok"]')
+            
 
-            for job in jobs:
+            for job_index in range(len(jobs)):
+                jobs = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-hvwiok"]')))
+                job = jobs[job_index]
+                
                 # Find the job title element within each job listing
                 title_element = job.find_element(By.XPATH, './/p[@class="href-button css-qkcbob"]')
                 job_title = title_element.text if title_element else "N/A"
@@ -46,17 +63,8 @@ try:
                 company_elem = job.find_element(By.XPATH, './/h5[@class="company-name-text"]')
                 company = company_elem.text if company_elem else "N/A"
 
-                # city_elem = job.find_element(By.XPATH, './/p[@class="css-6of238"]')
-                # city = city_elem.text if city_elem else "N/A"
-
-                # street_elem = job.find_element(By.XPATH, './/p[@class="css-1ht1cys"]')
-                # street = street_elem.text if street_elem else "N/A"
-
                 emp_elem = job.find_elements(By.XPATH, './/p[@class="css-1ht1cys"]')
                 employees = emp_elem[2].text if len(emp_elem) >= 3 else "N/A"
-
-                # date_elem = job.find_element(By.XPATH, './/p[@class="css-19bqwrc"]')
-                # date = date_elem.text if date_elem else "N/A"
 
                 link_elem = job.get_attribute('href')
 
@@ -117,7 +125,7 @@ try:
 
                 driver.back()
                     # Wait for the job listings to be visible on the new page
-               
+                WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-hvwiok"]')))
 
                 time.sleep(3)
 
@@ -132,7 +140,7 @@ try:
                         break
 
                 # Wait for the job listings to be visible on the new page
-                WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h7fpor"]')))
+                WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-hvwiok"]')))
 
             time.sleep(3)
 

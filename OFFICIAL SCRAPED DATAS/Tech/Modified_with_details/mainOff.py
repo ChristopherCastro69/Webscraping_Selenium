@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
 
 import time
 
@@ -17,19 +19,21 @@ try:
     # Wait for the job listings to be visible
     WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
 
-    total_pages = 1  # You may need to update this value based on the actual total number of pages
+    total_pages = 8 
+    current_page = 0; # You may need to update this value based on the actual total number of pages
 
     # Open the CSV file for writing
-    with open('Tech_Sep_Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
+    with open('2_Tech_Nov-Dec_Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['ID', 'Job Title', 'Salary', 'Experience', 'Company', 'Details', 'Address', 'Employees', 'Date', 'Link'])
 
         for page_number in range(1, total_pages + 1):
-            if page_number > 1:
+            if page_number > 8:
                 break  # Exit the loop if the page number is greater than 2
 
             print(f"Scraping page {page_number}...")
             # Find all job listings on the current page
+            current_page = page_number
             jobs = driver.find_elements(By.XPATH, '//a[@class="href-button css-h9szfi"]')
 
             for job in jobs:
@@ -136,9 +140,22 @@ try:
 
             time.sleep(3)
 
-except Exception as e:
-    print("An error occurred:", e)
 
+except NoSuchElementException as e:
+    print(f"Element not found on page {current_page}: {e}")
+    # Optional: Log the error or take corrective action
+
+except TimeoutException as e:
+    print(f"Timed out waiting for page to load or element to appear on page {current_page}: {e}")
+    # Optional: Log the error or retry loading the page
+
+except Exception as e:
+    print(f"An unexpected error occurred on page {current_page}: {e}")
+    # Optional: Handle other types of exceptions
+
+except Exception as e:
+    print("An error occurred at page: {current_page}" , e)
 finally:
     # Quit the driver after finishing the task
     driver.quit()
+

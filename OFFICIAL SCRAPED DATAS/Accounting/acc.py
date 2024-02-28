@@ -16,7 +16,7 @@ try:
     driver.get(url)
     # Wait for the job listings to be visible
     WebDriverWait(driver, 30).until(EC.presence_of_all_elements_located((By.XPATH, '//a[@class="href-button css-h9szfi"]')))
-    total_pages = 4  # You may need to update this value based on the actual total number of pages
+    total_pages = 8  # You may need to update this value based on the actual total number of pages
     # Starting page (page 4)
     start_page = 1
 
@@ -31,7 +31,7 @@ try:
             break
 
     # Open the CSV file for writing
-    with open('Job_data_cebu.csv', mode='w', encoding='utf-8', newline='') as file:
+    with open('Jan_Acc_Job_data_cebu_pg7.csv', mode='w', encoding='utf-8', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['ID', 'Job Title', 'Salary', 'Experience', 'Company', 'Details', 'Address', 'Employees', 'Date', 'Link'])
 
